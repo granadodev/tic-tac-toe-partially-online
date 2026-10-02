@@ -1,6 +1,36 @@
-//Esperamos a que se cargue la web
+////////////////////////////////////
+/*
+PROPOSITO: Conectar el cliente al servidor
+*/
+function connectToServer(){
+    const ws = new WebSocket("ws://localhost:8082");
+    ws.addEventListener("open", ()=>{
+        console.log("Connect");
+    });
+}
+
+connectToServer();
+
+
+
+
+////////////////////////////////////
+/*
+PROPOSITO: Correr funciones que requieran de que el DOM esta del todo cargado
+*/
 console.log("!");
 window.addEventListener('DOMContentLoaded', () =>{
+    changeGameBoard();
+});
+
+
+
+////////////////////////////////////
+/*
+PROPOSITO: Añadir los listenrs a los botones, funciones para que el juego corra bien y eso del gaming
+*/
+function changeGameBoard(){
+
     const tiles = Array.from(document.querySelectorAll('.tile'));
     const playerDisplay = document.querySelector('.display-player');
     const resetButton = document.querySelector('#reset');
@@ -138,4 +168,4 @@ console.log("!0");
     resetButton.addEventListener('click', resetBoard)
 
 
-});
+}
