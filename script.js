@@ -2,14 +2,63 @@
 /*
 PROPOSITO: Conectar el cliente al servidor
 */
+const ws = new WebSocket("ws://localhost:8082");
+
 function connectToServer(){
-    const ws = new WebSocket("ws://localhost:8082");
+
     ws.addEventListener("open", ()=>{
         console.log("Connect");
     });
+
+
+
+
+
+    ws.addEventListener('message', (event) => {
+   
+        const message = JSON.parse(event.data);
+
+        console.log(message);
+        switch (message.type) {
+            case 'updateBoard': {
+                updateBoard(message.payload.tile,message.payload.playerId);
+                break;
+            }
+            case 'assingName' : {
+                playerId = message.payload.player;
+                console.log("OSOSO");
+                if (message.payload.player === "O"){
+                    isGameActive = false;
+                }
+                break;
+                
+            }
+
+
+        }
+    });
+
 }
 
+
+
+
+
 connectToServer();
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//COSAS DE DOM
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+let playerId;
+const tiles = Array.from(document.querySelectorAll('.tile'));
+const playerDisplay = document.querySelector('.display-player');
+const announcer = document.querySelector('.announcer');
+let isGameActive = true;
 
 
 
@@ -18,17 +67,89 @@ connectToServer();
 /*
 PROPOSITO: Correr funciones que requieran de que el DOM esta del todo cargado
 */
-console.log("!");
 window.addEventListener('DOMContentLoaded', () =>{
-    changeGameBoard();
+    addListernerToTile();
 });
 
 
 
 ////////////////////////////////////
 /*
-PROPOSITO: Añadir los listenrs a los botones, funciones para que el juego corra bien y eso del gaming
+PROPOSITO: Añadir los listenrs a los botones
 */
+
+function addListernerToTile(){
+
+
+
+    const isValidAction = (tile) => {
+        if (tile.innerText === 'X' || tile.innerText === 'O'){
+            return false
+        }
+        return true
+    }
+
+
+    const userAction = (tile, index) => {
+        if(isValidAction(tile) && isGameActive){
+            isGameActive = false;
+            let messege = {
+                type: "clickTile",
+                payload: {
+                    tileId: index,
+                    playerId: playerId
+
+                }
+            }
+            ws.send(JSON.stringify(messege));
+        }
+    }
+
+    tiles.forEach((tile, index) => {
+        tile.addEventListener('click', () => userAction(tile, index))
+        console.log(tile); //HTML
+        console.log(index); //index en el array
+    });
+
+}
+
+
+
+////////////////////////////////////
+/*
+PROPOSITO: Actualziar el tablero
+*/
+function updateBoard(index, player){
+    console.log("Actualizando")
+
+    let tile = tiles[index];
+    tile.innerText = player;
+    tile.classList.add(`player${player}`);
+
+    if (player !== playerId){
+        isGameActive = true;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+
 function changeGameBoard(){
 
     const tiles = Array.from(document.querySelectorAll('.tile'));
@@ -49,7 +170,7 @@ function changeGameBoard(){
         [0] [1] [2]
         [3] [4] [5]
         [6] [7] [8]
-    */
+  
 
 
     const winningConditions = [
@@ -169,3 +290,5 @@ console.log("!0");
 
 
 }
+
+*/
