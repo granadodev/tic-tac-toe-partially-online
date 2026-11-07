@@ -2,7 +2,7 @@
 /*
 PROPOSITO: Conectar el cliente al servidor
 */
-const ws = new WebSocket("ws://localhost:8082");
+const ws = new WebSocket(`ws://${window.location.hostname}/ws`);
 
 function connectToServer(){
 
