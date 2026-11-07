@@ -13,14 +13,21 @@ wss.on('connection', ws => { // Agregadas comillas
     console.log('¡Nuevo cliente conectado!'); // Agregadas comillas
 
     //PROPOSITO: Enviar un JSON para asignar un X o Y al nueo jugador
+    let playerId = assignPlayerId()
     const answer = JSON.stringify({
         type: 'assingName',
         payload: {
-            player: assignPlayerId()
+            player: playerId
             }
         });
     console.log(answer);
     ws.send(answer)
+
+    //Si estamos llenos cerramos la conexion
+    if (playerId === "N"){
+        ws.close(4000, "Conexión terminada por el servidor");
+        return
+    }
     
     //PROPOSITO: Detectar si se cierra la conexion
     ws.on('close', () => { // Agregadas comillas

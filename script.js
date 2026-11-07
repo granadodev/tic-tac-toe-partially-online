@@ -8,6 +8,8 @@ function connectToServer(){
 
     ws.addEventListener("open", ()=>{
         console.log("Connect");
+        
+
     });
 
 
@@ -25,11 +27,21 @@ function connectToServer(){
                 break;
             }
             case 'assingName' : {
+                //Si estan llenos y nos dieron el nomrbe N,notififamos
+                if (message.payload.player === "N"){
+                    console.log("Bloqueado, estamos llenos");
+                    playerDisplay.innerText = "Estamos llenos. Lo siento"
+                    return
+                }
+
+                //Si todo sale bien
                 playerId = message.payload.player;
                 console.log("OSOSO");
                 if (message.payload.player === "O"){
                     isGameActive = false;
                 }
+                //Si la conexion fue exitosa creaos la pagina el juego
+                createGameBoard();
                 break;
                 
             }
@@ -55,30 +67,55 @@ connectToServer();
 
 
 let playerId;
-const tiles = Array.from(document.querySelectorAll('.tile'));
-const playerDisplay = document.querySelector('.display-player');
-const announcer = document.querySelector('.announcer');
+let tiles;
+let playerDisplay;
+let announcer;
 let isGameActive = true;
 
 
 
 
+
 ////////////////////////////////////
 /*
-PROPOSITO: Correr funciones que requieran de que el DOM esta del todo cargado
+PROPOSITO: Añadir los listenrs a los botones para el menu
 */
+
 window.addEventListener('DOMContentLoaded', () =>{
-    addListernerToTile();
+    addListenerToMenu();
 });
 
+function addListenerToMenu(){
+    
+    const button = document.querySelector('#play');
+
+    button.addEventListener("click", ()=>{
+        
+        createGameBoard();
+    })
+
+
+}
+
+function createGameBoard(){
+    const background = document.querySelector('.background');
+    background.innerHTML = htmlGameBoard;
+    //Añadimos los Listener a los tileuna vez creados
+    addListernerToTile();
+}
+
 
 
 ////////////////////////////////////
 /*
-PROPOSITO: Añadir los listenrs a los botones
+PROPOSITO: Añadir los listenrs a los botones para el juego
 */
 
 function addListernerToTile(){
+
+    tiles = Array.from(document.querySelectorAll('.tile'));
+    playerDisplay = document.querySelector('.display-player');
+    announcer = document.querySelector('.announcer');
 
 
 
@@ -135,8 +172,32 @@ function updateBoard(index, player){
 
 
 
+const htmlGameBoard = 
+`
+<section class="title">
+            <h1>Tic Tac Toe</h1>
+        </section>
+        <section class="display">
+            player <span class="display-player playerX"></span>'s turn
+        </section>
+        <section class="container">
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+        </section>
+        <section class="display announcer hide">
 
-
+        </section>
+        <section class="controls">
+            <button id="reset">Reset</button>
+        </section>
+`
 
 
 
